@@ -1,4 +1,4 @@
-package com.example.worksync;
+package com.example.worksync.model;
 
 public class Empleado {
     private int id;

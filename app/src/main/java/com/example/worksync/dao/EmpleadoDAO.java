@@ -1,5 +1,7 @@
-package com.example.worksync;
+package com.example.worksync.dao;
 
+import com.example.worksync.config.PostgresConfig;
+import com.example.worksync.model.Empleado;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,7 +17,7 @@ public class EmpleadoDAO {
     public Empleado login(String email, String password) {
         String query = "SELECT * FROM empleados WHERE email = ? AND password = ?";
         try (Connection conn = config.getConnection();
-             PreparedStatement ps = conn.prepareStatement(query)) {
+            PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setString(1, email);
             ps.setString(2, password);
             try (ResultSet rs = ps.executeQuery()) {

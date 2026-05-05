@@ -1,5 +1,7 @@
-package com.example.worksync;
+package com.example.worksync.dao;
 
+import com.example.worksync.config.MongoConfig;
+import com.example.worksync.model.Tarea;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;

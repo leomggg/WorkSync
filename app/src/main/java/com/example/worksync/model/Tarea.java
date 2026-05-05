@@ -1,4 +1,4 @@
-package com.example.worksync;
+package com.example.worksync.model;
 
 public class Tarea {
     private String idMongo;

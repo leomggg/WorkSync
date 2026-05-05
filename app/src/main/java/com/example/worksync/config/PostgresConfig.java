@@ -1,4 +1,4 @@
-package com.example.worksync;
+package com.example.worksync.config;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

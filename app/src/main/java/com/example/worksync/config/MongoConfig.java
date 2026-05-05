@@ -1,4 +1,4 @@
-package com.example.worksync;
+package com.example.worksync.config;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
