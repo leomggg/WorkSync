@@ -1,5 +1,7 @@
 package com.example.worksync.logic;
 
+import android.os.Handler;
+import android.os.Looper;
 import com.example.worksync.config.MongoConfig;
 import com.example.worksync.config.PostgresConfig;
 import com.example.worksync.dao.EmpleadoDAO;
@@ -15,6 +17,7 @@ public class GestorHibrido {
     private final TareaDAO tareaDAO;
     private final ExecutorService postgresExecutor;
     private final ExecutorService mongoExecutor;
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
     public GestorHibrido() {
         this.empleadoDAO = new EmpleadoDAO();
@@ -25,14 +28,22 @@ public class GestorHibrido {
 
     public void iniciarSesionYCargarTareas(String email, String password, SyncCallback callback) {
         postgresExecutor.execute(() -> {
-            Empleado empleado = empleadoDAO.login(email, password);
-            if (empleado != null) {
-                mongoExecutor.execute(() -> {
-                    List<Tarea> tareas = tareaDAO.listarPorEmpleado(empleado.getId());
-                    callback.onLoginSuccess(empleado, tareas);
-                });
-            } else {
-                callback.onError("Credenciales incorrectas");
+            try {
+                Empleado empleado = empleadoDAO.login(email, password);
+                if (empleado != null) {
+                    mongoExecutor.execute(() -> {
+                        try {
+                            List<Tarea> tareas = tareaDAO.listarPorEmpleado(empleado.getId());
+                            mainHandler.post(() -> callback.onLoginSuccess(empleado, tareas));
+                        } catch (Exception e) {
+                            mainHandler.post(() -> callback.onError("Error en MongoDB: " + e.getMessage()));
+                        }
+                    });
+                } else {
+                    mainHandler.post(() -> callback.onError("Credenciales incorrectas"));
+                }
+            } catch (Exception e) {
+                mainHandler.post(() -> callback.onError("Error en PostgreSQL: " + e.getMessage()));
             }
         });
     }
