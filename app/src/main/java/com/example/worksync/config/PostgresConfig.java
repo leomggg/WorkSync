@@ -26,7 +26,11 @@ public class PostgresConfig {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-        return DriverManager.getConnection(URL, USER, PASS);
+        Connection conn = DriverManager.getConnection(URL, USER, PASS);
+        if (conn != null) {
+            android.util.Log.d("PostgresConfig", "Conexión establecida con éxito");
+        }
+        return conn;
     }
 
     public ExecutorService getExecutor() {

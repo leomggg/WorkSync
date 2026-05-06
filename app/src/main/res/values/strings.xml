@@ -1,4 +1,12 @@
 <resources>
     <string name="app_name">WorkSync</string>
-    <string name="hello_world">Hello World!</string>
+    <string name="title_login">Iniciar Sesión</string>
+    <string name="hint_email">Correo electrónico</string>
+    <string name="hint_password">Contraseña</string>
+    <string name="btn_login">Entrar</string>
+    <string name="title_dashboard">Mis Tareas</string>
+    <string name="welcome_user">Bienvenido, %s</string>
+    <string name="error_empty_fields">Por favor, rellena todos los campos</string>
+    <string name="error_login">Credenciales incorrectas o error de conexión</string>
+    <string name="loading">Cargando...</string>
 </resources>
