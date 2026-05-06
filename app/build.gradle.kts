@@ -46,6 +46,8 @@ dependencies {
     implementation("org.postgresql:postgresql:42.6.0")
     implementation("org.mongodb:mongodb-driver-sync:4.11.0")
     testImplementation(libs.junit)
+    testImplementation("org.mockito:mockito-core:5.5.0")
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation("androidx.test:rules:1.5.0")
 }

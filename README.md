@@ -70,3 +70,16 @@ db.tareas.insertMany([
 ## 6. Seguridad y Control de Versiones
 - **Seguridad**: Autenticación básica con manejo de excepciones para prevenir cierres inesperados (Force Close).
 - **Git**: Se han seguido convenciones de commits semánticos (`feat`, `refactor`, `docs`) para mantener la trazabilidad del desarrollo.
+
+## 7. Pruebas Automáticas y Guía de Usuario
+
+### Pruebas (Automated Tests)
+El proyecto incluye pruebas unitarias para validar la lógica del sistema:
+- **`GestorHibridoTest`**: Verifica la instanciación y disponibilidad de la lógica de integración.
+- **`EmpleadoDAOTest`**: Prueba conceptual de la lógica de mapeo y autenticación.
+- *Ejecución*: Puedes ejecutar los tests desde Android Studio haciendo click derecho en la carpeta `test` y seleccionando "Run 'Tests in WorksSync'".
+
+### Guía de Usuario (Paso a Paso)
+1.  **Login**: Abre la app e introduce el correo `test@worksync.com` y contraseña `1234`. Pulsa el botón "Entrar".
+2.  **Dashboard**: Una vez dentro, verás un mensaje de bienvenida con tu nombre y la lista de tareas asignadas (extraídas de MongoDB).
+3.  **Logout**: Para salir, pulsa el botón "Cerrar Sesión" en la esquina superior derecha; esto te devolverá a la pantalla de login de forma segura.
