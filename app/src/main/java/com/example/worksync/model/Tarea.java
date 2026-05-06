@@ -1,6 +1,8 @@
 package com.example.worksync.model;
 
-public class Tarea {
+import java.io.Serializable;
+
+public class Tarea implements Serializable {
     private String idMongo;
     private String titulo;
     private String descripcion;
