@@ -8,5 +8,7 @@
     <string name="welcome_user">Bienvenido, %s</string>
     <string name="error_empty_fields">Por favor, rellena todos los campos</string>
     <string name="error_login">Credenciales incorrectas o error de conexión</string>
-    <string name="loading">Cargando...</string>
+    <string name="loading">Cargando…</string>
+    <string name="btn_logout">Cerrar Sesión</string>
+    <string name="empty_tasks">No tienes tareas asignadas</string>
 </resources>

@@ -10,13 +10,20 @@
     - **Colección:** `tareas` (titulo, descripcion, idEmpleadoRelacional).
 
 ## 3. Arquitectura del Sistema
-El proyecto sigue el patrón DAO (Data Access Object) y está organizado en paquetes:
-- **`model`**: Clases POJO (`Empleado`, `Tarea`) que representan las entidades.
-- **`config`**: Singletons (`PostgresConfig`, `MongoConfig`) que gestionan conexiones y hilos (`ExecutorService`).
-- **`dao`**: Lógica de acceso a datos (`EmpleadoDAO` para login, `TareaDAO` para CRUD de tareas).
-- **`logic`**: El `GestorHibrido` unifica ambas bases de datos, garantizando que los datos lleguen a la UI de forma asíncrona y segura.
+El proyecto sigue el patrón **DAO (Data Access Object)** y está organizado en una estructura de paquetes profesional:
+- **`model`**: Clases POJO (`Empleado`, `Tarea`) que representan las entidades del dominio.
+- **`config`**: Singletons (`PostgresConfig`, `MongoConfig`) que gestionan hilos y conexiones.
+- **`dao`**: Lógica de acceso a datos (`EmpleadoDAO` para SQL, `TareaDAO` para NoSQL).
+- **`logic`**: El `GestorHibrido` unifica ambas bases de datos, garantizando la seguridad de hilos (Main Thread).
+- **`ui`**: Actividades Android optimizadas para una experiencia de usuario fluida.
 
-## 4. Configuración de la Base de Datos
+## 4. Diagrama de Flujo de Datos
+1. **Usuario** introduce credenciales en la UI.
+2. **GestorHibrido** autentica en **PostgreSQL** (Hilo 1).
+3. Si el login es correcto, recupera tareas de **MongoDB** (Hilo 2).
+4. El **Handler** sincroniza los resultados y actualiza la UI en el **Hilo Principal**.
+
+## 5. Configuración de la Base de Datos
 
 ### PostgreSQL
 Ejecuta estos comandos para preparar el entorno:
