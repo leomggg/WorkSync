@@ -1,100 +1,69 @@
-# WorkSync - Proyecto de Gestión Híbrida (Acceso a Datos)
+# WorkSync - Gestión de Tareas Híbrida
 
-## 1. Introducción
-**WorkSync** es una aplicación Android diseñada para la gestión eficiente de empleados y sus tareas. El proyecto destaca por el uso de una **arquitectura de base de datos híbrida**, combinando la robustez de un sistema objeto-relacional (PostgreSQL) con la flexibilidad de uno orientado a documentos (MongoDB).
+**WorkSync** es una aplicación Android profesional diseñada para la gestión de empleados y tareas. El proyecto destaca por su **arquitectura de base de datos híbrida**, combinando la integridad de un sistema relacional con la flexibilidad de uno documental.
 
-## 2. Modelo de Datos Híbrido
-- **PostgreSQL (Estructurado):** Gestiona la entidad `Empleado`. Ideal para datos que requieren integridad referencial y seguridad en la autenticación.
-    - **Tabla:** `empleados` (id, nombre, email, password).
-- **MongoDB (Documental):** Gestiona la entidad `Tarea`. Permite almacenar descripciones extensas y metadatos variables de forma escalable.
-    - **Colección:** `tareas` (título, descripción, idEmpleadoRelacional).
+---
 
-## 3. Arquitectura del Sistema
-El proyecto sigue el patrón **DAO (Data Access Object)** y está organizado en una estructura de paquetes profesional:
-- **`model`**: Clases POJO (`Empleado`, `Tarea`) que representan las entidades del dominio.
-- **`config`**: Singletons (`PostgresConfig`, `MongoConfig`) que gestionan hilos y conexiones.
-- **`dao`**: Lógica de acceso a datos (`EmpleadoDAO` para SQL, `TareaDAO` para NoSQL).
-- **`logic`**: El `GestorHibrido` unifica ambas bases de datos, garantizando la seguridad de hilos (Main Thread).
-- **`ui`**: Actividades Android optimizadas para una experiencia de usuario fluida.
+## ✨ Funcionalidades Principales
 
-## 4. Diagrama de Flujo de Datos
-1. **Usuario** introduce credenciales en la UI.
-2. **GestorHibrido** autentica en **PostgreSQL** (Hilo 1).
-3. Si el login es correcto, recupera tareas de **MongoDB** (Hilo 2).
-4. El **Handler** sincroniza los resultados y actualiza la UI en el **Hilo Principal**.
+- **Autenticación Segura**: Sistema de login conectado a PostgreSQL.
+- **Gestión de Tareas Real-Time**: Creación, visualización y actualización de tareas almacenadas en MongoDB.
+- **Priorización de Trabajo**: Clasificación de tareas por niveles de prioridad (Alta, Media, Baja) con códigos de color.
+- **Control de Estado**: Marcado rápido de tareas como completadas con efecto visual de tachado y reordenación automática.
+- **Sincronización Híbrida**: Integración fluida entre datos de usuario (SQL) y datos de actividad (NoSQL).
 
-## 5. Configuración de la Base de Datos
+---
 
-### PostgreSQL
-Ejecuta estos comandos para preparar el entorno. **IMPORTANTE:** Asegúrate de que la base de datos se llame `worksync` y que el usuario de tu sistema PostgreSQL coincida con el configurado en la app (Usuario: `postgres`, Contraseña: `admin`).
+## 🏗️ Arquitectura Técnica
 
-```sql
--- Crear base de datos
-CREATE DATABASE worksync;
-\c worksync;
+El proyecto sigue el patrón **DAO (Data Access Object)** garantizando un código limpio y escalable:
 
--- Crear tabla
-CREATE TABLE empleados (
-    id SERIAL PRIMARY KEY,
-    nombre VARCHAR(100),
-    email VARCHAR(100) UNIQUE,
-    password VARCHAR(100)
-);
+- **PostgreSQL**: Gestiona la entidad `Empleado` y la seguridad de acceso.
+- **MongoDB**: Gestiona la entidad `Tarea`, permitiendo esquemas flexibles y descripciones ricas.
+- **Conectividad**: Configurado para conectar el emulador Android con servidores locales mediante el puente `10.0.2.2`.
+- **Multihilo**: Uso de `ExecutorService` para evitar bloqueos en la interfaz de usuario (UI) durante las consultas a bases de datos.
 
--- Insertar Usuario de prueba (OBLIGATORIO para el login)
-INSERT INTO empleados (nombre, email, password) VALUES 
-('Usuario Prueba', 'test@worksync.com', '1234');
-```
+---
 
-> [!TIP]
-> Si tu contraseña de PostgreSQL no es `admin`, cámbiala en el archivo `app/src/main/java/com/example/worksync/config/PostgresConfig.java` antes de ejecutar la app.
+## 🛠️ Requisitos e Instalación
 
-### MongoDB
-Inserta datos de prueba iniciales para ver tareas en el dashboard:
-```javascript
-use worksync;
+### 1. Requisitos Previos
+- **PostgreSQL**: Instalado y corriendo en el puerto `5432`.
+- **MongoDB**: Instalado y corriendo en el puerto `27017`.
+- **Android Studio**: Versión Ladybug o superior.
 
-db.tareas.insertMany([
-  {
-    titulo: "Configurar Servidor",
-    descripcion: "Instalar dependencias de red",
-    idEmpleadoRelacional: 1
-  },
-  {
-    titulo: "Validar Login",
-    descripcion: "Comprobar conexión con PostgreSQL",
-    idEmpleadoRelacional: 1
-  }
-]);
-```
+### 2. Configuración de Base de Datos
+La aplicación cuenta con un sistema de **auto-inicialización**. La primera vez que inicies sesión:
+1. La app intentará crear la base de datos `worksync` automáticamente en PostgreSQL.
+2. Se creará la tabla de empleados y un usuario de prueba:
+   - **Email:** `test@worksync.com`
+   - **Password:** `1234`
+3. Se conectará automáticamente a MongoDB para gestionar las colecciones de tareas.
 
-## 6. Solución de Problemas (Troubleshooting)
+> [!IMPORTANT]
+> Las credenciales por defecto para la conexión son:
+> - **Usuario:** `postgres`
+> - **Contraseña:** `admin`
+> Si tu configuración es distinta, ajusta los valores en `PostgresConfig.java` y `MongoConfig.java`.
 
-### "Credenciales incorrectas o Error de conexión"
-Si no puedes entrar:
-1.  **Verifica la Contraseña del Sistema**: Asegúrate de que en `PostgresConfig.java` la variable `PASS` sea la contraseña real de tu usuario `postgres` de Windows/Linux.
-2.  **Firewall**: El puerto `5432` debe estar abierto para que el emulador (IP `10.0.2.2`) pueda acceder al host.
-3.  **pg_hba.conf**: Asegúrate de que PostgreSQL permita conexiones desde el emulador.
-4.  **Wipe Data**: Si el emulador no arranca, usa la opción "Wipe Data" en el Device Manager de Android Studio.
+---
 
-## 5. Instrucciones de Ejecución
-1.  **Conectividad**: Asegúrate de que tus servicios de base de datos permitan conexiones desde la IP `10.0.2.2` (puente del emulador Android).
-2.  **Compilación**: Abre el proyecto en Android Studio y sincroniza Gradle.
-3.  **Lanzamiento**: Ejecuta la aplicación. Usa las credenciales `test@worksync.com` / `1234` para probar la integración completa.
+## 📱 Guía de Uso
 
-## 6. Seguridad y Control de Versiones
-- **Seguridad**: Autenticación básica con manejo de excepciones para prevenir cierres inesperados (Force Close).
-- **Git**: Se han seguido convenciones de commits semánticos (`feat`, `refactor`, `docs`) para mantener la trazabilidad del desarrollo.
+1. **Acceso**: Usa las credenciales de prueba (`test@worksync.com` / `1234`).
+2. **Crear Tarea**: Pulsa el botón flotante **(+)** abajo a la derecha, asigna un título, descripción y nivel de prioridad.
+3. **Completar Tarea**: Toca el icono de verificación (**v**) a la derecha de cualquier tarea. Verás como se tacha y se desplaza al final de la lista.
+4. **Prioridad**: Las tareas se visualizan en colores según su urgencia (Rojo para Alta, Azul para Media).
+5. **Cerrar Sesión**: Usa el botón "Salir" en la parte superior para volver al login de forma segura.
 
-## 7. Pruebas Automáticas y Guía de Usuario
+---
 
-### Pruebas (Automated Tests)
-El proyecto incluye pruebas unitarias para validar la lógica del sistema:
-- **`GestorHibridoTest`**: Verifica la instanciación y disponibilidad de la lógica de integración.
-- **`EmpleadoDAOTest`**: Prueba conceptual de la lógica de mapeo y autenticación.
-- *Ejecución*: Puedes ejecutar los tests desde Android Studio haciendo click derecho en la carpeta `test` y seleccionando "Run 'Tests in WorksSync'".
+## 🚀 Despliegue
 
-### Guía de Usuario (Paso a Paso)
-1.  **Login**: Abre la app e introduce el correo `test@worksync.com` y contraseña `1234`. Pulsa el botón "Entrar".
-2.  **Dashboard**: Una vez dentro, verás un mensaje de bienvenida con tu nombre y la lista de tareas asignadas (extraídas de MongoDB).
-3.  **Logout**: Para salir, pulsa el botón "Cerrar Sesión" en la esquina superior derecha; esto te devolverá a la pantalla de login de forma segura.
+1. Clona el repositorio.
+2. Sincroniza el proyecto con **Gradle**.
+3. Asegúrate de que tus servicios de base de datos acepten conexiones locales.
+4. Ejecuta en un emulador o dispositivo físico con acceso a la red local del host.
+
+---
+*Desarrollado como solución integral de gestión para entornos corporativos modernos.*
