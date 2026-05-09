@@ -23,14 +23,29 @@ public class PostgresConfig {
     public Connection getConnection() throws SQLException {
         try {
             Class.forName("org.postgresql.Driver");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            android.util.Log.e("PostgresConfig", "Driver not found");
         }
-        Connection conn = DriverManager.getConnection(URL, USER, PASS);
-        if (conn != null) {
-            android.util.Log.d("PostgresConfig", "Conexión establecida con éxito");
+
+        try {
+            // Intento 1: Conectar a la base de datos real
+            return DriverManager.getConnection(URL, USER, PASS);
+        } catch (SQLException e) {
+            if (e.getSQLState().equals("3D000") || e.getMessage().contains("does not exist")) {
+                // Si no existe, conectamos a 'postgres' para crearla
+                String rootUrl = "jdbc:postgresql://10.0.2.2:5432/postgres";
+                try (Connection rootConn = DriverManager.getConnection(rootUrl, USER, PASS);
+                    java.sql.Statement stmt = rootConn.createStatement()) {
+                    stmt.executeUpdate("CREATE DATABASE worksync");
+                    android.util.Log.i("PostgresConfig", "Base de datos 'worksync' creada automáticamente");
+                } catch (Exception ex) {
+                    android.util.Log.e("PostgresConfig", "No se pudo crear la DB: " + ex.getMessage());
+                }
+                // Reintentamos la conexión original
+                return DriverManager.getConnection(URL, USER, PASS);
+            }
+            throw e;
         }
-        return conn;
     }
 
     public ExecutorService getExecutor() {

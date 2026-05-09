@@ -7,12 +7,20 @@ public class Tarea implements Serializable {
     private String titulo;
     private String descripcion;
     private int idEmpleadoRelacional;
+    private boolean completada;
+    private String prioridad; // "Alta", "Media", "Baja"
 
     public Tarea(String idMongo, String titulo, String descripcion, int idEmpleadoRelacional) {
+        this(idMongo, titulo, descripcion, idEmpleadoRelacional, false, "Media");
+    }
+
+    public Tarea(String idMongo, String titulo, String descripcion, int idEmpleadoRelacional, boolean completada, String prioridad) {
         this.idMongo = idMongo;
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.idEmpleadoRelacional = idEmpleadoRelacional;
+        this.completada = completada;
+        this.prioridad = prioridad;
     }
 
     public String getIdMongo() { return idMongo; }
@@ -23,4 +31,8 @@ public class Tarea implements Serializable {
     public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
     public int getIdEmpleadoRelacional() { return idEmpleadoRelacional; }
     public void setIdEmpleadoRelacional(int idEmpleadoRelacional) { this.idEmpleadoRelacional = idEmpleadoRelacional; }
+    public boolean isCompletada() { return completada; }
+    public void setCompletada(boolean completada) { this.completada = completada; }
+    public String getPrioridad() { return prioridad; }
+    public void setPrioridad(String prioridad) { this.prioridad = prioridad; }
 }

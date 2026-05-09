@@ -1,13 +1,10 @@
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
 }
 
 android {
     namespace = "com.example.worksync"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.worksync"
@@ -32,8 +29,11 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    kotlinOptions {
-        jvmTarget = "11"
+
+    packaging {
+        resources {
+            excludes += "META-INF/native-image/**"
+        }
     }
 }
 
@@ -43,11 +43,11 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
-    implementation("org.postgresql:postgresql:42.6.0")
-    implementation("org.mongodb:mongodb-driver-sync:4.11.0")
+    implementation("org.postgresql:postgresql:42.2.5")
+    implementation(libs.mongodb.sync)
     testImplementation(libs.junit)
-    testImplementation("org.mockito:mockito-core:5.5.0")
+    testImplementation(libs.mockito.core)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation("androidx.test:rules:1.5.0")
+    androidTestImplementation(libs.androidx.rules)
 }

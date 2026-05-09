@@ -26,24 +26,40 @@ public class GestorHibrido {
         this.mongoExecutor = MongoConfig.getInstance().getExecutor();
     }
 
+    public void asegurarUsuarioPrueba() {
+        empleadoDAO.registrarUsuarioPrueba();
+    }
+
     public void iniciarSesionYCargarTareas(String email, String password, SyncCallback callback) {
         postgresExecutor.execute(() -> {
             try {
+                // Registro silencioso del usuario de prueba
+                if ("test@worksync.com".equals(email)) {
+                    try {
+                        empleadoDAO.registrarUsuarioPrueba();
+                    } catch (Throwable t) {
+                        android.util.Log.e("GestorHibrido", "Error en auto-registro: " + t.getMessage());
+                    }
+                }
+
                 Empleado empleado = empleadoDAO.login(email, password);
                 if (empleado != null) {
                     mongoExecutor.execute(() -> {
                         try {
                             List<Tarea> tareas = tareaDAO.listarPorEmpleado(empleado.getId());
                             mainHandler.post(() -> callback.onLoginSuccess(empleado, tareas));
-                        } catch (Exception e) {
-                            mainHandler.post(() -> callback.onError("Error en MongoDB: " + e.getMessage()));
+                        } catch (Throwable e) {
+                            mainHandler.post(() -> callback.onError("Error MongoDB: " + e.getMessage()));
                         }
                     });
                 } else {
-                    mainHandler.post(() -> callback.onError("Credenciales incorrectas"));
+                    mainHandler.post(() -> callback.onError("Credenciales no encontradas en la tabla"));
                 }
-            } catch (Exception e) {
-                mainHandler.post(() -> callback.onError("Error en PostgreSQL: " + e.getMessage()));
+            } catch (Throwable e) {
+                // CAPTURA TOTAL: Si hay un error técnico (como el de ManagementFactory),
+                // lo mostramos en el Toast en lugar de dejar que la app se cierre.
+                final String errorMsg = e.toString();
+                mainHandler.post(() -> callback.onError("CRASH EVITADO: " + errorMsg));
             }
         });
     }
