@@ -5,7 +5,9 @@ import com.example.worksync.model.Tarea;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Updates;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +22,9 @@ public class TareaDAO {
     public void insertar(Tarea tarea) {
         Document doc = new Document("titulo", tarea.getTitulo())
                 .append("descripcion", tarea.getDescripcion())
-                .append("idEmpleadoRelacional", tarea.getIdEmpleadoRelacional());
+                .append("idEmpleadoRelacional", tarea.getIdEmpleadoRelacional())
+                .append("completada", tarea.isCompletada())
+                .append("prioridad", tarea.getPrioridad());
         collection.insertOne(doc);
     }
 
@@ -31,9 +35,16 @@ public class TareaDAO {
                     doc.getObjectId("_id").toString(),
                     doc.getString("titulo"),
                     doc.getString("descripcion"),
-                    doc.getInteger("idEmpleadoRelacional")
+                    doc.getInteger("idEmpleadoRelacional"),
+                    doc.containsKey("completada") ? doc.getBoolean("completada") : false,
+                    doc.containsKey("prioridad") ? doc.getString("prioridad") : "Media"
             ));
         }
         return tareas;
+    }
+
+    public void actualizarEstado(String idMongo, boolean completada) {
+        collection.updateOne(Filters.eq("_id", new ObjectId(idMongo)), 
+                Updates.set("completada", completada));
     }
 }

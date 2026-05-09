@@ -7,7 +7,7 @@
 - **PostgreSQL (Estructurado):** Gestiona la entidad `Empleado`. Ideal para datos que requieren integridad referencial y seguridad en la autenticación.
     - **Tabla:** `empleados` (id, nombre, email, password).
 - **MongoDB (Documental):** Gestiona la entidad `Tarea`. Permite almacenar descripciones extensas y metadatos variables de forma escalable.
-    - **Colección:** `tareas` (titulo, descripcion, idEmpleadoRelacional).
+    - **Colección:** `tareas` (título, descripción, idEmpleadoRelacional).
 
 ## 3. Arquitectura del Sistema
 El proyecto sigue el patrón **DAO (Data Access Object)** y está organizado en una estructura de paquetes profesional:
@@ -26,11 +26,14 @@ El proyecto sigue el patrón **DAO (Data Access Object)** y está organizado en 
 ## 5. Configuración de la Base de Datos
 
 ### PostgreSQL
-Ejecuta estos comandos para preparar el entorno:
+Ejecuta estos comandos para preparar el entorno. **IMPORTANTE:** Asegúrate de que la base de datos se llame `worksync` y que el usuario de tu sistema PostgreSQL coincida con el configurado en la app (Usuario: `postgres`, Contraseña: `admin`).
+
 ```sql
+-- Crear base de datos
 CREATE DATABASE worksync;
 \c worksync;
 
+-- Crear tabla
 CREATE TABLE empleados (
     id SERIAL PRIMARY KEY,
     nombre VARCHAR(100),
@@ -38,13 +41,16 @@ CREATE TABLE empleados (
     password VARCHAR(100)
 );
 
--- Usuario de prueba
+-- Insertar Usuario de prueba (OBLIGATORIO para el login)
 INSERT INTO empleados (nombre, email, password) VALUES 
 ('Usuario Prueba', 'test@worksync.com', '1234');
 ```
 
+> [!TIP]
+> Si tu contraseña de PostgreSQL no es `admin`, cámbiala en el archivo `app/src/main/java/com/example/worksync/config/PostgresConfig.java` antes de ejecutar la app.
+
 ### MongoDB
-Inserta datos de prueba iniciales:
+Inserta datos de prueba iniciales para ver tareas en el dashboard:
 ```javascript
 use worksync;
 
@@ -61,6 +67,15 @@ db.tareas.insertMany([
   }
 ]);
 ```
+
+## 6. Solución de Problemas (Troubleshooting)
+
+### "Credenciales incorrectas o Error de conexión"
+Si no puedes entrar:
+1.  **Verifica la Contraseña del Sistema**: Asegúrate de que en `PostgresConfig.java` la variable `PASS` sea la contraseña real de tu usuario `postgres` de Windows/Linux.
+2.  **Firewall**: El puerto `5432` debe estar abierto para que el emulador (IP `10.0.2.2`) pueda acceder al host.
+3.  **pg_hba.conf**: Asegúrate de que PostgreSQL permita conexiones desde el emulador.
+4.  **Wipe Data**: Si el emulador no arranca, usa la opción "Wipe Data" en el Device Manager de Android Studio.
 
 ## 5. Instrucciones de Ejecución
 1.  **Conectividad**: Asegúrate de que tus servicios de base de datos permitan conexiones desde la IP `10.0.2.2` (puente del emulador Android).
